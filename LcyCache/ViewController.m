@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-
+#import "LcyCache.h"
 @interface ViewController ()
 
 @end
@@ -17,6 +17,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+//    [self convertToData];
+    [[LcyCache shareCache] readStringForKey:@"two" completeBlock:^(NSString *readString) {
+        
+    }];
+    [[LcyCache shareCache] saveString:@"22高心" withKey:@"two"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -24,4 +29,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)convertToData
+{
+    UIImage *gif = [UIImage imageNamed:@"2.png"];
+    NSData * data = UIImagePNGRepresentation(gif);
+    NSArray *cacPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+
+    [data writeToFile:[cacPath[0] stringByAppendingPathComponent:@"aa"] atomically:YES];
+    
+    UIImage *tGif = [UIImage imageWithData:[NSData dataWithContentsOfFile:[cacPath[0] stringByAppendingPathComponent:@"aa"]]];
+}
 @end

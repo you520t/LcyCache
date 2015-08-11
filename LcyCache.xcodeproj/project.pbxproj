@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2138CD421B7492D60071CB8C /* g.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2138CD411B7492D60071CB8C /* g.gif */; };
+		2138CD441B7498DB0071CB8C /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2138CD431B7498DB0071CB8C /* 2.png */; };
 		21BA92871B72FFE900D8759F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92861B72FFE900D8759F /* main.m */; };
 		21BA928A1B72FFE900D8759F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92891B72FFE900D8759F /* AppDelegate.m */; };
 		21BA928D1B72FFE900D8759F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA928C1B72FFE900D8759F /* ViewController.m */; };
@@ -14,6 +16,7 @@
 		21BA92921B72FFE900D8759F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21BA92911B72FFE900D8759F /* Images.xcassets */; };
 		21BA92951B72FFE900D8759F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21BA92931B72FFE900D8759F /* LaunchScreen.xib */; };
 		21BA92A11B72FFE900D8759F /* LcyCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92A01B72FFE900D8759F /* LcyCacheTests.m */; };
+		21BA92AD1B73003700D8759F /* LcyCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92AC1B73003700D8759F /* LcyCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +30,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2138CD411B7492D60071CB8C /* g.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = g.gif; sourceTree = "<group>"; };
+		2138CD431B7498DB0071CB8C /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
 		21BA92811B72FFE900D8759F /* LcyCache.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LcyCache.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21BA92851B72FFE900D8759F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21BA92861B72FFE900D8759F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -40,6 +45,8 @@
 		21BA929A1B72FFE900D8759F /* LcyCacheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LcyCacheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		21BA929F1B72FFE900D8759F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21BA92A01B72FFE900D8759F /* LcyCacheTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LcyCacheTests.m; sourceTree = "<group>"; };
+		21BA92AB1B73003700D8759F /* LcyCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LcyCache.h; sourceTree = "<group>"; };
+		21BA92AC1B73003700D8759F /* LcyCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LcyCache.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +88,9 @@
 		21BA92831B72FFE900D8759F /* LcyCache */ = {
 			isa = PBXGroup;
 			children = (
+				2138CD431B7498DB0071CB8C /* 2.png */,
+				2138CD411B7492D60071CB8C /* g.gif */,
+				21BA92AA1B73001700D8759F /* Classes */,
 				21BA92881B72FFE900D8759F /* AppDelegate.h */,
 				21BA92891B72FFE900D8759F /* AppDelegate.m */,
 				21BA928B1B72FFE900D8759F /* ViewController.h */,
@@ -117,6 +127,15 @@
 				21BA929F1B72FFE900D8759F /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		21BA92AA1B73001700D8759F /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				21BA92AB1B73003700D8759F /* LcyCache.h */,
+				21BA92AC1B73003700D8759F /* LcyCache.m */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,7 +218,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2138CD421B7492D60071CB8C /* g.gif in Resources */,
 				21BA92901B72FFE900D8759F /* Main.storyboard in Resources */,
+				2138CD441B7498DB0071CB8C /* 2.png in Resources */,
 				21BA92951B72FFE900D8759F /* LaunchScreen.xib in Resources */,
 				21BA92921B72FFE900D8759F /* Images.xcassets in Resources */,
 			);
@@ -220,6 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				21BA928D1B72FFE900D8759F /* ViewController.m in Sources */,
+				21BA92AD1B73003700D8759F /* LcyCache.m in Sources */,
 				21BA928A1B72FFE900D8759F /* AppDelegate.m in Sources */,
 				21BA92871B72FFE900D8759F /* main.m in Sources */,
 			);
@@ -348,6 +370,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = LcyCache/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -358,6 +381,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = LcyCache/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -416,6 +440,7 @@
 				21BA92A61B72FFE900D8759F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		21BA92A71B72FFE900D8759F /* Build configuration list for PBXNativeTarget "LcyCacheTests" */ = {
 			isa = XCConfigurationList;
@@ -424,6 +449,7 @@
 				21BA92A91B72FFE900D8759F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

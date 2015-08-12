@@ -16,7 +16,7 @@
 		21BA92921B72FFE900D8759F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21BA92911B72FFE900D8759F /* Images.xcassets */; };
 		21BA92951B72FFE900D8759F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21BA92931B72FFE900D8759F /* LaunchScreen.xib */; };
 		21BA92A11B72FFE900D8759F /* LcyCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92A01B72FFE900D8759F /* LcyCacheTests.m */; };
-		21BA92AD1B73003700D8759F /* LcyCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BA92AC1B73003700D8759F /* LcyCache.m */; };
+		21BC59701B7AE7890007021E /* LcyCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BC596F1B7AE7890007021E /* LcyCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,8 +45,8 @@
 		21BA929A1B72FFE900D8759F /* LcyCacheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LcyCacheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		21BA929F1B72FFE900D8759F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21BA92A01B72FFE900D8759F /* LcyCacheTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LcyCacheTests.m; sourceTree = "<group>"; };
-		21BA92AB1B73003700D8759F /* LcyCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LcyCache.h; sourceTree = "<group>"; };
-		21BA92AC1B73003700D8759F /* LcyCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LcyCache.m; sourceTree = "<group>"; };
+		21BC596E1B7AE7890007021E /* LcyCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LcyCache.h; sourceTree = "<group>"; };
+		21BC596F1B7AE7890007021E /* LcyCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LcyCache.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,8 +132,8 @@
 		21BA92AA1B73001700D8759F /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				21BA92AB1B73003700D8759F /* LcyCache.h */,
-				21BA92AC1B73003700D8759F /* LcyCache.m */,
+				21BC596E1B7AE7890007021E /* LcyCache.h */,
+				21BC596F1B7AE7890007021E /* LcyCache.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -241,7 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				21BA928D1B72FFE900D8759F /* ViewController.m in Sources */,
-				21BA92AD1B73003700D8759F /* LcyCache.m in Sources */,
+				21BC59701B7AE7890007021E /* LcyCache.m in Sources */,
 				21BA928A1B72FFE900D8759F /* AppDelegate.m in Sources */,
 				21BA92871B72FFE900D8759F /* main.m in Sources */,
 			);

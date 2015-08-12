@@ -22,6 +22,30 @@
         
     }];
     [[LcyCache shareCache] saveString:@"22高心" withKey:@"two"];
+    
+//    dispatch_queue_t cacheDataQueue = dispatch_queue_create("com.lcyu.cacheDataQueue", DISPATCH_QUEUE_SERIAL);
+//    NSString *dic = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.lcyuCacheDefault", [[NSProcessInfo processInfo] processName]]];
+//    dic = [dic stringByAppendingPathComponent:@"aaa"];
+//    for (int i=0; i<10000; i++) {
+//        dispatch_async(cacheDataQueue, ^{
+//                [[[NSString stringWithFormat:@"%d", i] dataUsingEncoding:NSUTF8StringEncoding] writeToFile:dic atomically:YES];
+//                NSLog(@"%d", i);
+//        });
+//    }
+    //    NSURL *diskCacheURL = [NSURL fileURLWithPath:dic isDirectory:YES];
+    //    NSArray *resourceKeys = @[NSURLIsDirectoryKey, NSURLContentModificationDateKey, NSURLTotalFileAllocatedSizeKey];
+    //
+    //
+    //    // This enumerator prefetches useful properties for our cache files.
+    //    NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtURL:diskCacheURL
+    //                                               includingPropertiesForKeys:resourceKeys
+    //                                                                  options:NSDirectoryEnumerationSkipsHiddenFiles
+    //                                                             errorHandler:NULL];
+    //    for (NSURL *fileURL in fileEnumerator) {
+    //        NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
+    //        NSLog(@"%@", [fileURL absoluteString]);
+    //    }
+
 }
 
 - (void)didReceiveMemoryWarning {

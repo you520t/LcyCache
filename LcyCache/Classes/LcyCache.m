@@ -12,7 +12,7 @@
 @interface LcyCache()
 @property (nonatomic, strong) NSCache *memoryCache;
 @property (nonatomic, strong) NSString *diskCachePath;
-@property (nonatomic, strong) NSString *cacheInfoCachePath;
+@property (nonatomic, strong) NSString *cacheInfoFilePath;
 @property (nonatomic, strong) dispatch_queue_t cacheInfoQueue;
 @property (nonatomic, strong) dispatch_queue_t cacheDataQueue;
 @end
@@ -40,8 +40,14 @@
         self.cacheInfoQueue = dispatch_queue_create("com.lcyu.cacheInfo", DISPATCH_QUEUE_SERIAL);
         self.cacheDataQueue = dispatch_queue_create("com.lcyu.cacheDataQueue", DISPATCH_QUEUE_CONCURRENT);
         self.diskCachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", [[NSProcessInfo processInfo] processName], directoryName]];
-        [[NSFileManager defaultManager] createDirectoryAtPath:self.diskCachePath withIntermediateDirectories:YES attributes:nil error:nil];
-//        self.cacheInfoCachePath = self.diskCachePath
+        if(![[NSFileManager defaultManager] fileExistsAtPath:self.diskCachePath])
+        {
+            [[NSFileManager defaultManager] createDirectoryAtPath:self.diskCachePath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        self.cacheInfoFilePath = [self.diskCachePath stringByAppendingPathComponent:@"cacheInfo"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:self.cacheInfoFilePath]) {
+            [[NSFileManager defaultManager] createFileAtPath:self.cacheInfoFilePath contents:nil attributes:nil];
+        }
     }
     return self;
 }
@@ -64,8 +70,10 @@
     });
 }
 
-//-(void)saveCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
-//{
-//    self.ca
-//}
+-(void)saveCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
+{
+    dispatch_async(self.cacheInfoQueue, ^{
+        
+    });
+}
 @end

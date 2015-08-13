@@ -15,6 +15,7 @@
 @property (nonatomic, strong) NSString *cacheInfoFilePath;
 @property (nonatomic, strong) dispatch_queue_t cacheInfoQueue;
 @property (nonatomic, strong) dispatch_queue_t cacheDataQueue;
+@property (nonatomic, strong) NSMutableDictionary *cacheInfo;
 @end
 
 @implementation LcyCache
@@ -48,32 +49,82 @@
         if (![[NSFileManager defaultManager] fileExistsAtPath:self.cacheInfoFilePath]) {
             [[NSFileManager defaultManager] createFileAtPath:self.cacheInfoFilePath contents:nil attributes:nil];
         }
+        dispatch_async(self.cacheDataQueue, ^{
+            NSData *jsonData = [NSData dataWithContentsOfFile:self.cacheInfoFilePath];
+            NSDictionary *jsonDic = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:nil] : nil;
+            self.cacheInfo = jsonDic ? [jsonDic mutableCopy] : [NSMutableDictionary dictionary];
+        });
     }
     return self;
 }
 
--(void)saveString:(NSString *)data withKey:(NSString *)key
+-(void)saveString:(NSString *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
-    if (!key || !data) {
-        return;
-    }
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{key:data} options:NSJSONWritingPrettyPrinted error:nil];
-    [jsonData writeToFile:[self.diskCachePath stringByAppendingPathComponent:key] atomically:YES];
+    dispatch_async(self.cacheDataQueue, ^{
+        NSData *stringData = [data dataUsingEncoding:NSUTF8StringEncoding];
+        [self saveData:stringData withKey:key withTimeoutInterval:timeoutInterval];
+        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
+    });
 }
 
 -(void)readStringForKey:(NSString *)key completeBlock:(void (^)(NSString *readString))completeBlock
 {
     dispatch_async(self.cacheDataQueue, ^{
-        NSData *jsonData = [NSData dataWithContentsOfFile:[self.diskCachePath stringByAppendingPathComponent:key]];
-        NSDictionary *jsonDic = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:nil] : nil;
-        !completeBlock?:completeBlock([jsonDic valueForKey:key]);
+        [self readDataForKey:key completeBlock:^(NSData *readData) {
+            !completeBlock?:completeBlock([[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding]);
+        }];
+    });
+}
+
+-(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
+{
+    dispatch_async(self.cacheDataQueue, ^{
+        [self saveData:[NSKeyedArchiver archivedDataWithRootObject:object] withKey:key withTimeoutInterval:timeoutInterval];
+        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
+    });
+}
+
+-(void)readObjectForKey:(NSString *)key completeBlock:(void (^)(id readObject))completeBlock
+{
+    dispatch_async(self.cacheDataQueue, ^{
+        [self readDataForKey:key completeBlock:^(NSData *readData) {
+            !completeBlock?:completeBlock([NSKeyedUnarchiver unarchiveObjectWithData:readData]);
+        }];
+    });
+}
+
+-(void)saveData:(NSData *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
+{
+    if (!key || !data) {
+        return;
+    }
+    dispatch_async(self.cacheDataQueue, ^{
+        [data writeToFile:[self.diskCachePath stringByAppendingPathComponent:key] atomically:YES];
+        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
+    });
+}
+
+-(void)readDataForKey:(NSString *)key completeBlock:(void (^)(NSData *readData))completeBlock
+{
+    dispatch_async(self.cacheDataQueue, ^{
+        NSData *readData = [[NSData alloc] initWithContentsOfFile:[self.diskCachePath stringByAppendingPathComponent:key]];
+        !completeBlock?:completeBlock(readData);
     });
 }
 
 -(void)saveCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
+    NSString *stringDate = timeoutInterval > 0 ? [NSString stringWithFormat:@"%ld", (long)timeoutInterval] : nil;
     dispatch_async(self.cacheInfoQueue, ^{
-        
+        if (stringDate) {
+            [self.cacheInfo setValue:stringDate forKey:key];
+        }
+        else
+        {
+            [self.cacheInfo removeObjectForKey:key];
+        }
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.cacheInfo options:NSJSONWritingPrettyPrinted error:nil];
+        [jsonData writeToFile:self.cacheInfoFilePath atomically:YES];
     });
 }
 @end

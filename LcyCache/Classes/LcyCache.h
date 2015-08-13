@@ -11,5 +11,8 @@
 @interface LcyCache : NSObject
 +(instancetype)shareCache;
 -(void)saveString:(NSString *)data withKey:(NSString *)key;
+-(void)saveString:(NSString *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval;
+-(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval;
 -(void)readStringForKey:(NSString *)key completeBlock:(void (^)(NSString *readString))completeBlock;
+-(void)readObjectForKey:(NSString *)key completeBlock:(void (^)(id readObject))completeBlock;
 @end

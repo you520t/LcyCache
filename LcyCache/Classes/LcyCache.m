@@ -49,10 +49,15 @@
         if (![[NSFileManager defaultManager] fileExistsAtPath:self.cacheInfoFilePath]) {
             [[NSFileManager defaultManager] createFileAtPath:self.cacheInfoFilePath contents:nil attributes:nil];
         }
-        dispatch_async(self.cacheDataQueue, ^{
+        dispatch_async(self.cacheInfoQueue, ^{
             NSData *jsonData = [NSData dataWithContentsOfFile:self.cacheInfoFilePath];
             NSDictionary *jsonDic = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:nil] : nil;
             self.cacheInfo = jsonDic ? [jsonDic mutableCopy] : [NSMutableDictionary dictionary];
+            for (NSString *key in self.cacheInfo) {
+                if ([[self.cacheInfo objectForKey:key] longLongValue] < (long)NSDate.timeIntervalSinceReferenceDate) {
+                    [self removeCacheForKey:key];
+                }
+            }
         });
     }
     return self;
@@ -63,7 +68,6 @@
     dispatch_async(self.cacheDataQueue, ^{
         NSData *stringData = [data dataUsingEncoding:NSUTF8StringEncoding];
         [self saveData:stringData withKey:key withTimeoutInterval:timeoutInterval];
-        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
     });
 }
 
@@ -80,7 +84,6 @@
 {
     dispatch_async(self.cacheDataQueue, ^{
         [self saveData:[NSKeyedArchiver archivedDataWithRootObject:object] withKey:key withTimeoutInterval:timeoutInterval];
-        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
     });
 }
 
@@ -100,7 +103,7 @@
     }
     dispatch_async(self.cacheDataQueue, ^{
         [data writeToFile:[self.diskCachePath stringByAppendingPathComponent:key] atomically:YES];
-        [self saveCacheInfoKey:key withTimeoutInterval:timeoutInterval];
+        [self setCacheInfoKey:key withTimeoutInterval:timeoutInterval];
     });
 }
 
@@ -108,13 +111,15 @@
 {
     dispatch_async(self.cacheDataQueue, ^{
         NSData *readData = [[NSData alloc] initWithContentsOfFile:[self.diskCachePath stringByAppendingPathComponent:key]];
-        !completeBlock?:completeBlock(readData);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            !completeBlock?:completeBlock(readData);
+        });
     });
 }
 
--(void)saveCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
+-(void)setCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
-    NSString *stringDate = timeoutInterval > 0 ? [NSString stringWithFormat:@"%ld", (long)timeoutInterval] : nil;
+    NSString *stringDate = timeoutInterval > 0 ? [NSString stringWithFormat:@"%ld", (long)    (NSDate.timeIntervalSinceReferenceDate + timeoutInterval)] : nil;
     dispatch_async(self.cacheInfoQueue, ^{
         if (stringDate) {
             [self.cacheInfo setValue:stringDate forKey:key];
@@ -126,5 +131,13 @@
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.cacheInfo options:NSJSONWritingPrettyPrinted error:nil];
         [jsonData writeToFile:self.cacheInfoFilePath atomically:YES];
     });
+}
+
+-(void)removeCacheForKey:(NSString *)key
+{
+    dispatch_barrier_async(self.cacheDataQueue, ^{
+        [[NSFileManager defaultManager] removeItemAtPath:[self.diskCachePath stringByAppendingPathComponent:key] error:nil];
+    });
+    [self setCacheInfoKey:key withTimeoutInterval:0];
 }
 @end

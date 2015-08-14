@@ -34,7 +34,7 @@
     SubObj *sub = [SubObj new];
     sub.address = @"中国龙";
     test.subObj = sub;
-    [[LcyCache shareCache] saveObject:test withKey:@"test" withTimeoutInterval:100];
+//    [[LcyCache shareCache] saveObject:test withKey:@"test" withTimeoutInterval:1];
     [[LcyCache shareCache] readObjectForKey:@"test" completeBlock:^(id readObject) {
         
     }];

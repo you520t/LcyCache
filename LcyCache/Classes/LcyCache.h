@@ -12,7 +12,20 @@
 +(instancetype)shareCache;
 -(void)saveString:(NSString *)data withKey:(NSString *)key;
 -(void)saveString:(NSString *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval;
+
+-(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key;
 -(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval;
+
+-(void)saveData:(NSData *)data withKey:(NSString *)key;
+-(void)saveData:(NSData *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval;
+
 -(void)readStringForKey:(NSString *)key completeBlock:(void (^)(NSString *readString))completeBlock;
 -(void)readObjectForKey:(NSString *)key completeBlock:(void (^)(id readObject))completeBlock;
+
+-(void)readDataForKey:(NSString *)key completeBlock:(void (^)(NSData *readData))completeBlock;
+
+-(void)removeCacheForKey:(NSString *)key;
+- (BOOL)hasCacheForKey:(NSString*)key;
+- (void)clearCache;
+-(void)cacheSizeWithCompletionBlock:(void(^)(NSUInteger fileCount, NSUInteger cacheSize))completionBlock;
 @end

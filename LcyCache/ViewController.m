@@ -34,11 +34,19 @@
     SubObj *sub = [SubObj new];
     sub.address = @"中国龙";
     test.subObj = sub;
-//    [[LcyCache shareCache] saveObject:test withKey:@"test" withTimeoutInterval:1];
-    [[LcyCache shareCache] readObjectForKey:@"test" completeBlock:^(id readObject) {
-        
+        for (int i=1; i<=1000; i++) {
+            [[LcyCache shareCache] saveObject:test withKey:[NSString stringWithFormat:@"%i", i] withTimeoutInterval:60*60];
+            NSLog(@"%i", i);
+        }
+    
+    [[LcyCache shareCache] cacheSizeWithCompletionBlock:^(NSUInteger fileCount, NSUInteger cacheSize) {
+        NSLog(@"%lu---%lu", (unsigned long)cacheSize, (unsigned long)fileCount);
     }];
-
+//    [[LcyCache shareCache] saveObject:test withKey:@"test" withTimeoutInterval:60*60];
+//    [[LcyCache shareCache] readObjectForKey:@"test" completeBlock:^(id readObject) {
+//        
+//    }];
+//    [[LcyCache shareCache] clearCache];
 }
 
 -(void)convertToData

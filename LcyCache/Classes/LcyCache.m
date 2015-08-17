@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "LcyCache.h"
-
+static const long kTimeoutInterval = 60 * 60 * 24 * 7;
 @interface LcyCache()
 @property (nonatomic, strong) NSCache *memoryCache;
 @property (nonatomic, strong) NSString *diskCachePath;
@@ -63,6 +63,64 @@
     return self;
 }
 
+- (void)clearCache {
+    dispatch_async(self.cacheInfoQueue, ^{
+        for (NSString *key in self.cacheInfo) {
+            [self removeCacheForKey:key];
+        }
+        
+        [self.cacheInfo removeAllObjects];
+        
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.cacheInfo options:NSJSONWritingPrettyPrinted error:nil];
+        [jsonData writeToFile:self.cacheInfoFilePath atomically:YES];
+    });
+}
+
+- (BOOL)hasCacheForKey:(NSString*)key {
+    NSTimeInterval timeoutInterval = [self timeoutIntervalForKey:key];
+    if (timeoutInterval == 0) return NO;
+    if (timeoutInterval < (long)NSDate.timeIntervalSinceReferenceDate) return NO;
+    return [[NSFileManager defaultManager] fileExistsAtPath:[self.diskCachePath stringByAppendingPathComponent:key]];
+}
+
+-(void)removeCacheForKey:(NSString *)key
+{
+    dispatch_barrier_async(self.cacheDataQueue, ^{
+        [[NSFileManager defaultManager] removeItemAtPath:[self.diskCachePath stringByAppendingPathComponent:key] error:nil];
+    });
+    [self setCacheInfoKey:key withTimeoutInterval:0];
+}
+
+-(void)cacheSizeWithCompletionBlock:(void(^)(NSUInteger fileCount, NSUInteger cacheSize))completionBlock
+{
+    dispatch_barrier_async(self.cacheDataQueue, ^{
+        NSUInteger size = 0;
+        NSUInteger fileCount = 0;
+        NSURL *diskCacheURL = [NSURL fileURLWithPath:self.diskCachePath isDirectory:YES];
+        NSArray *resourceKeys = @[NSURLIsDirectoryKey, NSURLTotalFileAllocatedSizeKey];
+        
+        NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtURL:diskCacheURL
+                                                                     includingPropertiesForKeys:resourceKeys
+                                                                                        options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                                                   errorHandler:NULL];
+        for (NSURL *fileURL in fileEnumerator) {
+            NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
+            if([[resourceValues objectForKey:NSURLIsDirectoryKey] boolValue])
+                continue;
+            size += [[resourceValues objectForKey:NSURLTotalFileAllocatedSizeKey] unsignedIntegerValue];
+            fileCount += 1;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            !completionBlock ? : completionBlock(fileCount, size);
+        });
+    });
+}
+
+-(void)saveString:(NSString *)data withKey:(NSString *)key
+{
+    [self saveString:data withKey:key withTimeoutInterval:kTimeoutInterval];
+}
+
 -(void)saveString:(NSString *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
     dispatch_async(self.cacheDataQueue, ^{
@@ -80,10 +138,17 @@
     });
 }
 
+-(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key
+{
+    [self saveObject:object withKey:key withTimeoutInterval:kTimeoutInterval];
+}
+
 -(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
     dispatch_async(self.cacheDataQueue, ^{
-        [self saveData:[NSKeyedArchiver archivedDataWithRootObject:object] withKey:key withTimeoutInterval:timeoutInterval];
+        if (object) {
+            [self saveData:[NSKeyedArchiver archivedDataWithRootObject:object] withKey:key withTimeoutInterval:timeoutInterval];
+        }
     });
 }
 
@@ -91,9 +156,14 @@
 {
     dispatch_async(self.cacheDataQueue, ^{
         [self readDataForKey:key completeBlock:^(NSData *readData) {
-            !completeBlock?:completeBlock([NSKeyedUnarchiver unarchiveObjectWithData:readData]);
+            !completeBlock?:completeBlock(readData ? [NSKeyedUnarchiver unarchiveObjectWithData:readData] : readData);
         }];
     });
+}
+
+-(void)saveData:(NSData *)data withKey:(NSString *)key
+{
+    [self saveData:data withKey:key withTimeoutInterval:kTimeoutInterval];
 }
 
 -(void)saveData:(NSData *)data withKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
@@ -133,11 +203,12 @@
     });
 }
 
--(void)removeCacheForKey:(NSString *)key
+-(NSTimeInterval)timeoutIntervalForKey:(NSString *)key
 {
-    dispatch_barrier_async(self.cacheDataQueue, ^{
-        [[NSFileManager defaultManager] removeItemAtPath:[self.diskCachePath stringByAppendingPathComponent:key] error:nil];
+    __block long timeoutInterval = 0;
+    dispatch_sync(self.cacheInfoQueue, ^{
+        timeoutInterval = [[self.cacheInfo objectForKey:key] longLongValue];
     });
-    [self setCacheInfoKey:key withTimeoutInterval:0];
+    return timeoutInterval;
 }
 @end

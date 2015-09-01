@@ -205,7 +205,7 @@ static const long kTimeoutInterval = 60 * 60 * 24 * 7;
 
 -(NSTimeInterval)timeoutIntervalForKey:(NSString *)key
 {
-    __block long timeoutInterval = 0;
+    __block long long timeoutInterval = 0;
     dispatch_sync(self.cacheInfoQueue, ^{
         timeoutInterval = [[self.cacheInfo objectForKey:key] longLongValue];
     });

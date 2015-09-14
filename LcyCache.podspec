@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "LcyCache"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "Cache data."
   s.homepage     = "https://github.com/you520t/LcyCache"
   s.license      = 'MIT'

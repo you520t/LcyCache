@@ -34,14 +34,18 @@
     SubObj *sub = [SubObj new];
     sub.address = @"中国龙";
     test.subObj = sub;
-        for (int i=1; i<=1000; i++) {
-            [[LcyCache shareCache] saveObject:test withKey:[NSString stringWithFormat:@"%i", i] withTimeoutInterval:60*60];
-            NSLog(@"%i", i);
-        }
+//        for (int i=1; i<=1000; i++) {
+//            [[LcyCache shareCache] saveObject:test withKey:[NSString stringWithFormat:@"%i", i] withTimeoutInterval:60*60];
+////            NSLog(@"%i", i);
+//        }
+    NSLog(@"%@",[[LcyCache shareCache] readObjectForKey:[NSString stringWithFormat:@"%i", 100]]);
     
     [[LcyCache shareCache] cacheSizeWithCompletionBlock:^(NSUInteger fileCount, NSUInteger cacheSize) {
         NSLog(@"%lu---%lu", (unsigned long)cacheSize, (unsigned long)fileCount);
     }];
+    
+    LcyCache *cache = [LcyCache new];
+    [cache saveObject:test withKey:[NSString stringWithFormat:@"%i", 10000] withTimeoutInterval:60*60];
 //    [[LcyCache shareCache] saveObject:test withKey:@"test" withTimeoutInterval:60*60];
 //    [[LcyCache shareCache] readObjectForKey:@"test" completeBlock:^(id readObject) {
 //        
@@ -57,7 +61,7 @@
 
     [data writeToFile:[cacPath[0] stringByAppendingPathComponent:@"aa"] atomically:YES];
     
-    UIImage *tGif = [UIImage imageWithData:[NSData dataWithContentsOfFile:[cacPath[0] stringByAppendingPathComponent:@"aa"]]];
+//    UIImage *tGif = [UIImage imageWithData:[NSData dataWithContentsOfFile:[cacPath[0] stringByAppendingPathComponent:@"aa"]]];
     
     //    [self convertToData];
     //    [[LcyCache shareCache] readStringForKey:@"two" completeBlock:^(NSString *readString) {

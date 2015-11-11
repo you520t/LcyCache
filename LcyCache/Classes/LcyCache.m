@@ -131,12 +131,17 @@ static const long kTimeoutInterval = 60 * 60 * 24 * 7;
 
 -(void)readStringForKey:(NSString *)key completeBlock:(void (^)(NSString *readString))completeBlock
 {
-    dispatch_async(self.cacheDataQueue, ^{
-        [self readDataForKey:key completeBlock:^(NSData *readData) {
-            !completeBlock?:completeBlock([[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding]);
-        }];
-    });
+    [self readDataForKey:key completeBlock:^(NSData *readData) {
+        !completeBlock?:completeBlock([[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding]);
+    }];
 }
+
+-(NSString *)readStringForKey:(NSString *)key
+{
+    NSData *readData = [self readDataForKey:key];
+    return [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
+}
+
 
 -(void)saveObject:(id<NSCoding>)object withKey:(NSString *)key
 {
@@ -154,12 +159,17 @@ static const long kTimeoutInterval = 60 * 60 * 24 * 7;
 
 -(void)readObjectForKey:(NSString *)key completeBlock:(void (^)(id readObject))completeBlock
 {
-    dispatch_async(self.cacheDataQueue, ^{
-        [self readDataForKey:key completeBlock:^(NSData *readData) {
-            !completeBlock?:completeBlock(readData ? [NSKeyedUnarchiver unarchiveObjectWithData:readData] : readData);
-        }];
-    });
+    [self readDataForKey:key completeBlock:^(NSData *readData) {
+        !completeBlock?:completeBlock(readData ? [NSKeyedUnarchiver unarchiveObjectWithData:readData] : readData);
+    }];
 }
+
+-(id)readObjectForKey:(NSString *)key
+{
+    NSData *readData = [self readDataForKey:key];
+    return readData ? [NSKeyedUnarchiver unarchiveObjectWithData:readData] : readData;
+}
+
 
 -(void)saveData:(NSData *)data withKey:(NSString *)key
 {
@@ -187,6 +197,19 @@ static const long kTimeoutInterval = 60 * 60 * 24 * 7;
     });
 }
 
+-(NSData *)readDataForKey:(NSString *)key
+{
+    __block NSData *blockReadData = nil;
+    dispatch_sync(self.cacheDataQueue, ^{
+        if ([self hasCacheForKey:key]) {
+            NSData *readData = [[NSData alloc] initWithContentsOfFile:[self.diskCachePath stringByAppendingPathComponent:key]];
+            blockReadData = readData;
+        }
+    });
+    return blockReadData;
+}
+
+
 -(void)setCacheInfoKey:(NSString *)key withTimeoutInterval:(NSTimeInterval)timeoutInterval
 {
     NSString *stringDate = timeoutInterval > 0 ? [NSString stringWithFormat:@"%ld", (long)    (NSDate.timeIntervalSinceReferenceDate + timeoutInterval)] : nil;
@@ -210,5 +233,10 @@ static const long kTimeoutInterval = 60 * 60 * 24 * 7;
         timeoutInterval = [[self.cacheInfo objectForKey:key] longLongValue];
     });
     return timeoutInterval;
+}
+
+-(void)dealloc
+{
+    
 }
 @end
